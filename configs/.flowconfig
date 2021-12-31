@@ -1,0 +1,15 @@
+[version]
+0.162.1
+
+[ignore]
+
+.*/coverage/.*
+.*/dist/.*
+.*/node_modules/.*
+
+[options]
+exact_by_default=true
+experimental.const_params=true
+module.use_strict=true
+munge_underscores=true
+suppress_type=$FlowFixMe

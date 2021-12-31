@@ -1,0 +1,64 @@
+name: performance
+
+on: [pull_request]
+
+jobs:
+  compressed-size:
+    name: compressed-size
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: necolas/compressed-size-action@master
+      with:
+        build-script: "build"
+        pattern: "./dist/**/*.js"
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  benchmarks:
+    name: benchmarks
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 50
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '15.x'
+    - name: 'Setup temporary files'
+      run: |
+        echo "BASE_SHA=$(echo ${{ github.event.pull_request.base.sha }} | cut -c1-8)" >> $GITHUB_ENV
+        echo "PATCH_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-8)" >> $GITHUB_ENV
+        echo "BASELINE_JSON=$(mktemp)" >> $GITHUB_ENV
+        echo "PATCH_JSON=$(mktemp)" >> $GITHUB_ENV
+        echo "PR_COMMENT=$(mktemp)" >>  $GITHUB_ENV
+    - name: 'Benchmark: baseline'
+      run: |
+        git checkout ${{ github.event.pull_request.base.sha }}
+        npm install
+        npm run build
+        npm run benchmark > ${{ env.BASELINE_JSON }}
+    - name: 'Benchmark: patch'
+      run: |
+        git checkout ${{ github.event.pull_request.head.sha }}
+        npm install
+        npm run build
+        npm run benchmark > ${{ env.PATCH_JSON }}
+    - name: 'Collect results'
+      run: |
+        echo "## Benchmarks" >> pr_comment
+        echo "### Base ${BASE_SHA}" >> pr_comment
+        tail -n +2 ${{ env.BASELINE_JSON }} >> pr_comment
+        echo "### Patch ${PATCH_SHA}" >> pr_comment
+        tail -n +2 ${{ env.PATCH_JSON }} >> pr_comment
+        cat pr_comment > ${{ env.PR_COMMENT }}
+    - name: 'Post comment'
+      uses: actions/github-script@v4.0.2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: require('fs').readFileSync('${{ env.PR_COMMENT }}').toString()
+          });
