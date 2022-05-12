@@ -127,10 +127,11 @@ function createStyleq(options?: StyleqOptions): Styleq {
           const value = style[prop];
           if (value !== undefined) {
             if (disableMix) {
-              if (value != null) {
-                if (inlineStyle == null) {
-                  inlineStyle = {};
-                }
+              if (inlineStyle == null) {
+                inlineStyle = {};
+              }
+              // Only set the value if it hasn't already been set
+              if (inlineStyle[prop] === undefined) {
                 inlineStyle[prop] = value;
               }
             } else if (!definedProperties.includes(prop)) {

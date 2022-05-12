@@ -185,6 +185,13 @@ describe('styleq()', () => {
     expect(inlineStyle3).toEqual(null);
   });
 
+  test('disableMix dedupes inline styles', () => {
+    const [, inlineStyle] = styleqNoMix([{ a: 'a' }, { a: 'aa' }]);
+    expect(inlineStyle).toEqual({ a: 'aa' });
+    const [, inlineStyle2] = styleqNoMix([{ a: 'a' }, { a: null }]);
+    expect(inlineStyle2).toEqual({ a: null });
+  });
+
   test('disableMix does not dedupe class names and inline styles', () => {
     const a = { $$css: true, a: 'a', ':focus$a': 'focus$a' };
     const b = { $$css: true, b: 'b' };
