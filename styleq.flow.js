@@ -19,13 +19,13 @@ type InlineStyle = {
 type EitherStyle = CompiledStyle | InlineStyle;
 
 export type StylesArray<+T> = T | $ReadOnlyArray<StylesArray<T>>;
-export type Styles = StylesArray<CompiledStyle | InlineStyle | false>;
+export type Styles = StylesArray<EitherStyle | false | void>;
 export type Style<+T = EitherStyle> = StylesArray<false | ?T>;
 
 export type StyleqOptions = {
   disableCache?: boolean,
   disableMix?: boolean,
-  transform?: (CompiledStyle) => CompiledStyle,
+  transform?: (EitherStyle) => EitherStyle,
 };
 
 export type StyleqResult = [string, InlineStyle | null];
