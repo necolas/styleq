@@ -7,16 +7,16 @@
  * @flow strict
  */
 
-type CompiledStyle = {
+export type CompiledStyle = {
   $$css: boolean,
   [key: string]: string,
 };
 
-type InlineStyle = {
-  [key: string]: mixed,
+export type InlineStyle = {
+  [key: string]: number | string,
 };
 
-type EitherStyle = CompiledStyle | InlineStyle;
+export type EitherStyle = CompiledStyle | InlineStyle;
 
 export type StylesArray<+T> = T | $ReadOnlyArray<StylesArray<T>>;
 export type Styles = StylesArray<EitherStyle | false | void>;

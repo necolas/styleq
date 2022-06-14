@@ -123,28 +123,34 @@ function createStyleq(options?: StyleqOptions): Styleq {
 
       // ----- DYNAMIC: Process inline style object -----
       else {
-        for (const prop in style) {
-          const value = style[prop];
-          if (value !== undefined) {
-            if (disableMix) {
-              if (inlineStyle == null) {
-                inlineStyle = {};
-              }
-              // Only set the value if it hasn't already been set
-              if (inlineStyle[prop] === undefined) {
-                inlineStyle[prop] = value;
-              }
-            } else if (!definedProperties.includes(prop)) {
-              if (value != null) {
-                if (inlineStyle == null) {
-                  inlineStyle = {};
+        if (disableMix) {
+          if (inlineStyle == null) {
+            inlineStyle = {};
+          }
+          inlineStyle = Object.assign({}, style, inlineStyle);
+        } else {
+          let subStyle = null;
+          for (const prop in style) {
+            const value = style[prop];
+            if (value !== undefined) {
+              if (!definedProperties.includes(prop)) {
+                if (value != null) {
+                  if (inlineStyle == null) {
+                    inlineStyle = {};
+                  }
+                  if (subStyle == null) {
+                    subStyle = {};
+                  }
+                  subStyle[prop] = value;
                 }
-                inlineStyle[prop] = value;
+                definedProperties.push(prop);
+                // Cache is unnecessary overhead if results can't be reused.
+                nextCache = null;
               }
-              definedProperties.push(prop);
-              // Cache is unnecessary overhead if results can't be reused.
-              nextCache = null;
             }
+          }
+          if (subStyle != null) {
+            inlineStyle = Object.assign(subStyle, inlineStyle);
           }
         }
       }

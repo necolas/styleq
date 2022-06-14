@@ -87,6 +87,7 @@ jsonReporter(suite);
  */
 
 const styleqNoCache = styleq.factory({ disableCache: true });
+const styleqNoMix = styleq.factory({ disableMix: true });
 const styleqWithLocalization = styleq.factory({
   transform(style) {
     return localizeStyle(style, false);
@@ -288,6 +289,37 @@ test('large inline style', () => {
 
 test('merged inline style', () => {
   styleq(
+    {
+      backgroundColor: 'blue',
+      borderColor: 'blue',
+      display: 'block',
+    },
+    {
+      backgroundColor: 'red',
+      borderColor: 'red',
+      borderStyle: 'solid',
+      borderWidth: '1px',
+      boxSizing: 'border-bx',
+      display: 'flex',
+      listStyle: 'none',
+      marginTop: '0',
+      marginEnd: '0',
+      marginBottom: '0',
+      marginStart: '0',
+      paddingTop: '0',
+      paddingEnd: '0',
+      paddingBottom: '0',
+      paddingStart: '0',
+      textAlign: 'start',
+      textDecoration: 'none',
+      whiteSpace: 'pre',
+      zIndex: '0',
+    }
+  );
+});
+
+test('merged inline style (mix disabled)', () => {
+  styleqNoMix(
     {
       backgroundColor: 'blue',
       borderColor: 'blue',

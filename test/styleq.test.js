@@ -12,6 +12,15 @@ import { styleq } from '../src/styleq';
 const styleqNoCache = styleq.factory({ disableCache: true });
 const styleqNoMix = styleq.factory({ disableMix: true });
 
+function stringifyInlineStyle(inlineStyle) {
+  let str = '';
+  Object.keys(inlineStyle).forEach((prop) => {
+    const value = inlineStyle[prop];
+    str += `${prop}:${value};`;
+  });
+  return str;
+}
+
 describe('styleq()', () => {
   test('warns if extracted property values are not strings', () => {
     const err = console.error;
@@ -166,6 +175,16 @@ describe('styleq()', () => {
     expect(inlineStyle2).toEqual(null);
   });
 
+  test('preserves order of inline style', () => {
+    const [, inlineStyle] = styleq([{ font: 'inherit', fontSize: 12 }]);
+    const str = stringifyInlineStyle(inlineStyle);
+    expect(str).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);
+
+    const [, inlineStyle2] = styleq([{ font: 'inherit' }, { fontSize: 12 }]);
+    const str2 = stringifyInlineStyle(inlineStyle2);
+    expect(str2).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);
+  });
+
   test('dedupes class names and inline styles', () => {
     const a = { $$css: true, a: 'a', ':focus$a': 'focus$a' };
     const b = { $$css: true, b: 'b' };
@@ -190,6 +209,19 @@ describe('styleq()', () => {
     expect(inlineStyle).toEqual({ a: 'aa' });
     const [, inlineStyle2] = styleqNoMix([{ a: 'a' }, { a: null }]);
     expect(inlineStyle2).toEqual({ a: null });
+  });
+
+  test('disableMix preserves stringified order of inline style', () => {
+    const [, inlineStyle] = styleqNoMix([{ font: 'inherit', fontSize: 12 }]);
+    const str = stringifyInlineStyle(inlineStyle);
+    expect(str).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);
+
+    const [, inlineStyle2] = styleqNoMix([
+      { font: 'inherit' },
+      { fontSize: 12 },
+    ]);
+    const str2 = stringifyInlineStyle(inlineStyle2);
+    expect(str2).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);
   });
 
   test('disableMix does not dedupe class names and inline styles', () => {

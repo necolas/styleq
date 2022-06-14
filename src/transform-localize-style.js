@@ -20,7 +20,7 @@ const markerProp = '$$css$localize';
  * => { float: 'float-left' }
  */
 
-function compileStyle(style, isRTL: boolean) {
+function compileStyle(style, isRTL) {
   // Create a new compiled style for styleq
   const compiledStyle = {};
   for (const prop in style) {
@@ -36,7 +36,7 @@ function compileStyle(style, isRTL: boolean) {
   return compiledStyle;
 }
 
-export function localizeStyle(style, isRTL: boolean) {
+export function localizeStyle(style, isRTL) {
   if (style[markerProp] != null) {
     const compiledStyleIndex = isRTL ? 1 : 0;
     // Check the cache in case we've already seen this object
