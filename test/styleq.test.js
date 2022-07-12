@@ -175,7 +175,7 @@ describe('styleq()', () => {
     expect(inlineStyle2).toEqual(null);
   });
 
-  test('preserves order of inline style', () => {
+  test('preserves order of stringified inline style', () => {
     const [, inlineStyle] = styleq([{ font: 'inherit', fontSize: 12 }]);
     const str = stringifyInlineStyle(inlineStyle);
     expect(str).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);
@@ -211,7 +211,7 @@ describe('styleq()', () => {
     expect(inlineStyle2).toEqual({ a: null });
   });
 
-  test('disableMix preserves stringified order of inline style', () => {
+  test('disableMix preserves order of stringified inline style', () => {
     const [, inlineStyle] = styleqNoMix([{ font: 'inherit', fontSize: 12 }]);
     const str = stringifyInlineStyle(inlineStyle);
     expect(str).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);

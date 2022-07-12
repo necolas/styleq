@@ -192,8 +192,8 @@ const styles = {
     marginRight: 'margin-right-10',
     marginBottom: 'margin-bottom-10',
     opacity: 'opacity-07',
-    focus$opacity: 'focus-opacity-08',
-    active$opacity: 'active-opacity-1'
+    __focus$opacity: 'focus-opacity-08',
+    __active$opacity: 'active-opacity-1'
   }
 };
 ```
@@ -224,7 +224,7 @@ insertOrExtract('.xjrodmsp-opacity-1:focus a[data-prop] { opacity:1.0; }');
 const styles = {
   root: {
     $$css: true,
-    'xjrodmsp-opacity-1': 'xjrodmsp-opacity-1'
+    '__xjrodmsp-opacity-1': 'xjrodmsp-opacity-1'
   }
 };
 ```
@@ -270,8 +270,8 @@ function View(props) {
 const reset = {
   $$css: true,
   // Compiler decides that only one reset is allowed per element.
-  // Each reset rule created is set to the '$$reset' key.
-  $$reset: 'reset-<hash>',
+  // Each reset rule created is set to the '__reset' key.
+  __reset: 'reset-<hash>',
 };
 ```
 
@@ -381,7 +381,7 @@ const themeVars = {
 
 const themeStyle = {
   $$css: true,
-  $$theme: 'theme-default'
+  __theme: 'theme-default'
 };
 
 const [ className ] = styleq(themeStyle, props.style);
@@ -469,9 +469,9 @@ insertOrExtract('.s-1 { height:100px; width:100px }', 1);
 // rule will be applied to each element.
 const oocss1 = {
   $$css: true,
-  colorScheme: 'cs-1',
-  padding: 'p-1',
-  size: 's-1'
+  __cs: 'cs-1',
+  __p: 'p-1',
+  __s: 's-1'
 };
 
 const View = (props) => (
@@ -480,8 +480,8 @@ const View = (props) => (
 
 const oocss2 = {
   $$css: true,
-  colorScheme: 'cs-2',
-  padding: 'p-2'
+  __cs: 'cs-2',
+  __p: 'p-2'
 }
 
 const StyledView = (props) => (
