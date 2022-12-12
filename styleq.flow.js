@@ -9,7 +9,7 @@
 
 export type CompiledStyle = {
   $$css: true,
-  [key: string]: string,
+  [key: string]: string | null,
 };
 
 export type InlineStyle = {

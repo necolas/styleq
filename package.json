@@ -2,6 +2,7 @@
   "version": "0.1.2",
   "name": "styleq",
   "main": "styleq.js",
+  "types": "styleq.d.ts",
   "module": "dist/styleq.js",
   "sideEffects": false,
   "license": "MIT",
