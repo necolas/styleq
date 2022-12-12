@@ -8,12 +8,13 @@
  */
 
 export type CompiledStyle = {
-  $$css: boolean,
+  $$css: true,
   [key: string]: string,
 };
 
 export type InlineStyle = {
-  [key: string]: number | string,
+  $$css?: empty,
+  [key: string]: number | string | null,
 };
 
 export type EitherStyle = CompiledStyle | InlineStyle;

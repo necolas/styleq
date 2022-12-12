@@ -9,7 +9,7 @@
 
 const cache = new WeakMap();
 
-const markerProp = '$$css$localize';
+export const markerProp = '$$css$localize';
 
 /**
  * The compiler polyfills logical properties and values, generating a class

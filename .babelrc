@@ -10,5 +10,8 @@
       "targets": "defaults"
     }],
     "@babel/preset-flow"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-parameters"
   ]
 }

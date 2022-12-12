@@ -15,14 +15,14 @@
   ],
   "scripts": {
     "benchmark": "node test/benchmark.node.js",
-    "build": "babel src --out-dir dist --config-file ./configs/.babelrc",
-    "flow": "flow --flowconfig-name ./configs/.flowconfig",
+    "build": "babel src --out-dir dist",
+    "flow": "flow",
     "jest": "jest ./test",
     "lint": "npm run lint:report -- --fix",
-    "lint:report": "eslint src/**/*.js --config ./configs/.eslintrc",
+    "lint:report": "eslint src/**/*.js",
     "prepare": "npm run test && npm run build",
-    "prettier": "prettier --write \"**/*.js\" --ignore-path ./configs/.prettierignore",
-    "prettier:report": "prettier --check \"**/*.js\" --ignore-path ./configs/.prettierignore",
+    "prettier": "prettier --write **/*.js",
+    "prettier:report": "prettier --check **/*.js",
     "test": "npm run flow && npm run prettier:report && npm run lint:report && npm run jest"
   },
   "devDependencies": {
@@ -30,6 +30,7 @@
     "@babel/core": "^7.15.5",
     "@babel/eslint-parser": "^7.15.8",
     "@babel/plugin-syntax-flow": "^7.12.13",
+    "@babel/plugin-transform-parameters": "^7.20.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-flow": "^7.14.5",
     "@babel/types": "^7.15.6",
@@ -37,7 +38,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-flowtype": "^7.0.0",
-    "flow-bin": "^0.162.1",
+    "flow-bin": "^0.195.1",
     "jest": "^27.2.4",
     "prettier": "^2.4.1"
   },
@@ -47,10 +48,7 @@
     },
     "transform": {
       "\\.js$": [
-        "babel-jest",
-        {
-          "configFile": "./configs/.babelrc"
-        }
+        "babel-jest"
       ]
     }
   },

@@ -9,14 +9,26 @@
 
 'use strict';
 
-import type { IStyleq, Styleq, StyleqOptions } from '../styleq.flow';
+import type {
+  IStyleq,
+  Styleq,
+  StyleqOptions,
+  InlineStyle,
+  EitherStyle,
+  Styles,
+  StyleqResult,
+} from '../styleq.flow';
 
-const cache = new WeakMap();
-const compiledKey = '$$css';
+type ClassNameChunk = string;
+type DefinedPropertiesChunk = Array<string>;
+type Cache = WeakMap<
+  EitherStyle,
+  [ClassNameChunk, DefinedPropertiesChunk, Cache]
+>;
 
 function createStyleq(options?: StyleqOptions): Styleq {
-  let disableCache;
-  let disableMix;
+  let disableCache: boolean = false;
+  let disableMix: boolean = false;
   let transform;
 
   if (options != null) {
@@ -25,20 +37,17 @@ function createStyleq(options?: StyleqOptions): Styleq {
     transform = options.transform;
   }
 
-  return function styleq() {
-    // Keep track of property commits to the className
-    const definedProperties = [];
-    // The className and inline style to build up
-    let className = '';
-    let inlineStyle = null;
-    // The current position in the cache graph
-    let nextCache = disableCache ? null : cache;
+  // Independent caches are needed for different config options
+  const cache: null | Cache = disableCache ? null : new WeakMap();
 
-    // This way of creating an array from arguments is fastest
-    const styles = new Array(arguments.length);
-    for (let i = 0; i < arguments.length; i++) {
-      styles[i] = arguments[i];
-    }
+  return function styleq(...styles: Array<Styles>): StyleqResult {
+    // Keep track of property commits to the className
+    const definedProperties: DefinedPropertiesChunk = [];
+    // The className and inline style to build up
+    let className: ClassNameChunk = '';
+    let inlineStyle: null | InlineStyle = null;
+    // The current position in the cache graph
+    let nextCache: null | Cache = cache;
 
     // Iterate over styles from last to first
     while (styles.length > 0) {
@@ -56,10 +65,10 @@ function createStyleq(options?: StyleqOptions): Styleq {
       }
 
       // Process an individual style object
-      const style =
+      const style: EitherStyle =
         transform != null ? transform(possibleStyle) : possibleStyle;
 
-      if (style[compiledKey]) {
+      if (style.$$css) {
         // Build up the class names defined by this object
         let classNameChunk = '';
 
@@ -68,10 +77,9 @@ function createStyleq(options?: StyleqOptions): Styleq {
           // Cache: read
           const cacheEntry = nextCache.get(style);
           if (cacheEntry != null) {
-            classNameChunk = cacheEntry[0];
-            // $FlowIgnore
-            definedProperties.push.apply(definedProperties, cacheEntry[1]);
-            nextCache = cacheEntry[2];
+            let moreProps: DefinedPropertiesChunk;
+            [classNameChunk, moreProps, nextCache] = cacheEntry;
+            definedProperties.push(...moreProps);
           }
         }
         // Update the chunks with data from this object
@@ -80,22 +88,23 @@ function createStyleq(options?: StyleqOptions): Styleq {
           const definedPropertiesChunk = [];
           for (const prop in style) {
             const value = style[prop];
-            if (prop === compiledKey) continue;
-            // Each property value is used as an HTML class name
-            // { 'debug.string': 'debug.string', opacity: 's-jskmnoqp' }
-            if (typeof value === 'string') {
-              // Only add to chunks if this property hasn't already been seen
-              if (!definedProperties.includes(prop)) {
-                classNameChunk += classNameChunk ? ' ' + value : value;
-                definedProperties.push(prop);
-                if (nextCache != null) {
-                  definedPropertiesChunk.push(prop);
-                }
+            if (prop === '$$css') continue;
+            // Only add to chunks if this property hasn't already been seen
+            if (!definedProperties.includes(prop)) {
+              definedProperties.push(prop);
+              if (nextCache != null) {
+                definedPropertiesChunk.push(prop);
               }
-            }
-            // If we encounter a value that isn't a string
-            else {
-              console.error(`styleq: ${prop} typeof ${value} is not "string".`);
+              // Each property value is used as an HTML class name
+              // { 'debug.string': 'debug.string', opacity: 's-jskmnoqp' }
+              if (typeof value === 'string') {
+                classNameChunk += classNameChunk ? ' ' + value : value;
+              } else if (value !== null) {
+                // If we encounter a value that isn't a string
+                console.error(
+                  `styleq: "${prop}" typeof ${value} is not "string" or "null".`
+                );
+              }
             }
           }
           // Cache: write
@@ -124,12 +133,9 @@ function createStyleq(options?: StyleqOptions): Styleq {
       // ----- DYNAMIC: Process inline style object -----
       else {
         if (disableMix) {
-          if (inlineStyle == null) {
-            inlineStyle = {};
-          }
-          inlineStyle = Object.assign({}, style, inlineStyle);
+          inlineStyle = Object.assign(({}: InlineStyle), style, inlineStyle);
         } else {
-          let subStyle = null;
+          let subStyle: null | InlineStyle = null;
           for (const prop in style) {
             const value = style[prop];
             if (value !== undefined) {
@@ -141,7 +147,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   if (subStyle == null) {
                     subStyle = {};
                   }
-                  subStyle[prop] = value;
+                  (subStyle: InlineStyle)[prop] = value;
                 }
                 definedProperties.push(prop);
                 // Cache is unnecessary overhead if results can't be reused.
