@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-declare type CompiledStyle = {
-  [key: string]: string | null;
+declare type CompiledStyle<T> = {
+  [key: string]: T | string | null;
 } & {
   $$css: true;
 };
@@ -17,24 +17,23 @@ declare type InlineStyle = {
   $$css?: never;
 };
 
-declare type EitherStyle = CompiledStyle | InlineStyle;
+declare type EitherStyle<T> = CompiledStyle<T> | InlineStyle;
 
 declare type StylesArray<T> = T | ReadonlyArray<StylesArray<T>>;
-declare type Styles = StylesArray<EitherStyle | false | void | undefined>;
-declare type Style<T = EitherStyle> = StylesArray<false | T | null | undefined>;
+declare type Styles<T> = StylesArray<EitherStyle<T> | false | void | undefined>;
 
-declare type StyleqOptions = {
+declare type StyleqOptions<T = empty> = {
   disableCache?: boolean;
   disableMix?: boolean;
-  transform?: (styleObj: EitherStyle) => EitherStyle;
+  transform?: (styleObj: EitherStyle<T>) => EitherStyle<never>;
 };
 
 declare type StyleqResult = [string, InlineStyle | null];
-declare type Styleq = (styles: Styles) => StyleqResult;
+declare type Styleq<T> = (styles: Styles<T>) => StyleqResult;
 
 declare type IStyleq = {
-  (...styles: Array<Styles>): StyleqResult;
-  factory: (options?: StyleqOptions) => Styleq;
+  <T = empty>(...styles: Array<Styles<T>>): StyleqResult;
+  factory: <T = empty>(options?: StyleqOptions<T>) => Styleq<T>;
 };
 
 declare module 'styleq' {

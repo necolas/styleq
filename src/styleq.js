@@ -21,15 +21,15 @@ import type {
 
 type ClassNameChunk = string;
 type DefinedPropertiesChunk = Array<string>;
-type Cache = WeakMap<
-  EitherStyle,
-  [ClassNameChunk, DefinedPropertiesChunk, Cache]
+type Cache<T> = WeakMap<
+  EitherStyle<T>,
+  [ClassNameChunk, DefinedPropertiesChunk, Cache<T>]
 >;
 
-function createStyleq(options?: StyleqOptions): Styleq {
+function createStyleq<T>(options?: StyleqOptions<T>): Styleq<T> {
   let disableCache: boolean = false;
   let disableMix: boolean = false;
-  let transform;
+  let transform: void | ((EitherStyle<T>) => EitherStyle<empty>);
 
   if (options != null) {
     disableCache = options.disableCache === true;
@@ -38,16 +38,16 @@ function createStyleq(options?: StyleqOptions): Styleq {
   }
 
   // Independent caches are needed for different config options
-  const cache: null | Cache = disableCache ? null : new WeakMap();
+  const cache: null | Cache<T> = disableCache ? null : new WeakMap();
 
-  return function styleq(...styles: Array<Styles>): StyleqResult {
+  return function styleq(...styles: Array<Styles<T>>): StyleqResult {
     // Keep track of property commits to the className
     const definedProperties: DefinedPropertiesChunk = [];
     // The className and inline style to build up
     let className: ClassNameChunk = '';
     let inlineStyle: null | InlineStyle = null;
     // The current position in the cache graph
-    let nextCache: null | Cache = cache;
+    let nextCache: null | Cache<T> = cache;
 
     // Iterate over styles from last to first
     while (styles.length > 0) {
@@ -65,7 +65,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
       }
 
       // Process an individual style object
-      const style: EitherStyle =
+      const style: EitherStyle<empty> =
         transform != null ? transform(possibleStyle) : possibleStyle;
 
       if (style.$$css) {
@@ -87,7 +87,8 @@ function createStyleq(options?: StyleqOptions): Styleq {
           // The properties defined by this object
           const definedPropertiesChunk = [];
           for (const prop in style) {
-            const value = style[prop];
+            const value: string | null = style[prop];
+
             if (prop === '$$css') continue;
             // Only add to chunks if this property hasn't already been seen
             if (!definedProperties.includes(prop)) {
