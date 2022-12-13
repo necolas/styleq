@@ -9,10 +9,19 @@
 
 'use strict';
 
-import type { IStyleq, Styleq, StyleqOptions } from '../styleq.flow';
+import type {
+  IStyleq,
+  Styleq,
+  StyleqOptions,
+  CompiledStyle,
+  InlineStyle,
+  Styles,
+} from '../styleq.flow';
 
-const cache = new WeakMap();
-const compiledKey = '$$css';
+type Cache = WeakMap<CompiledStyle, [string, Array<string>, Cache]>;
+
+const cache: Cache = new WeakMap();
+const compiledKey: '$$css' = '$$css';
 
 function createStyleq(options?: StyleqOptions): Styleq {
   let disableCache;
@@ -30,12 +39,12 @@ function createStyleq(options?: StyleqOptions): Styleq {
     const definedProperties = [];
     // The className and inline style to build up
     let className = '';
-    let inlineStyle = null;
+    let inlineStyle: null | InlineStyle = null;
     // The current position in the cache graph
     let nextCache = disableCache ? null : cache;
 
     // This way of creating an array from arguments is fastest
-    const styles = new Array(arguments.length);
+    const styles: Array<Styles> = new Array(arguments.length);
     for (let i = 0; i < arguments.length; i++) {
       styles[i] = arguments[i];
     }
@@ -59,7 +68,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
       const style =
         transform != null ? transform(possibleStyle) : possibleStyle;
 
-      if (style[compiledKey]) {
+      if (style.$$css) {
         // Build up the class names defined by this object
         let classNameChunk = '';
 
@@ -133,9 +142,9 @@ function createStyleq(options?: StyleqOptions): Styleq {
           if (inlineStyle == null) {
             inlineStyle = {};
           }
-          inlineStyle = Object.assign({}, style, inlineStyle);
+          inlineStyle = Object.assign(({}: InlineStyle), style, inlineStyle);
         } else {
-          let subStyle = null;
+          let subStyle: null | InlineStyle = null;
           for (const prop in style) {
             const value = style[prop];
             if (value !== undefined) {
@@ -147,7 +156,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   if (subStyle == null) {
                     subStyle = {};
                   }
-                  subStyle[prop] = value;
+                  (subStyle: InlineStyle)[prop] = value;
                 }
                 definedProperties.push(prop);
                 // Cache is unnecessary overhead if results can't be reused.

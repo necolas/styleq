@@ -8,11 +8,12 @@
  */
 
 export type CompiledStyle = {
-  $$css: boolean,
+  $$css: true,
   [key: string]: string,
 };
 
 export type InlineStyle = {
+  $$css?: empty,
   [key: string]: number | string,
 };
 
