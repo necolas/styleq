@@ -22,14 +22,25 @@ function stringifyInlineStyle(inlineStyle) {
 }
 
 describe('styleq()', () => {
-  test('warns if extracted property values are not strings', () => {
-    const err = console.error;
-    console.error = (msg) => {
-      throw new Error(msg);
-    };
-    const style = { $$css: true, a: 1, b: 2 };
-    expect(() => styleq(style)).toThrow();
-    console.error = err;
+  describe('invalid values', () => {
+    beforeAll(() => {
+      jest.spyOn(global.console, 'error').mockImplementation((msg) => {
+        throw new Error(msg);
+      });
+    });
+    afterAll(() => {
+      global.console.error.mockRestore();
+    });
+
+    test('warns if extracted property values are not strings or null', () => {
+      expect(() => styleq({ $$css: true, a: 1 })).toThrow();
+      expect(() => styleq({ $$css: true, a: undefined })).toThrow();
+      expect(() => styleq({ $$css: true, a: false })).toThrow();
+      expect(() => styleq({ $$css: true, a: true })).toThrow();
+      expect(() => styleq({ $$css: true, a: {} })).toThrow();
+      expect(() => styleq({ $$css: true, a: [] })).toThrow();
+      expect(() => styleq({ $$css: true, a: new Date() })).toThrow();
+    });
   });
 
   test('combines different class names', () => {
@@ -54,6 +65,13 @@ describe('styleq()', () => {
     expect(styleq([a, b])[0]).toEqual('backgoundColor-b');
     // Tests memoized result of [a,b] is correct
     expect(styleq([c, a, b])[0]).toEqual('backgoundColor-b');
+  });
+
+  test('dedupes class names with "null" value', () => {
+    const a = { $$css: true, backgroundColor: 'backgroundColor-a' };
+    const b = { $$css: true, backgroundColor: null };
+    expect(styleqNoCache([a, b])[0]).toEqual('');
+    expect(styleq([a, b])[0]).toEqual('');
   });
 
   test('dedupes class names in complex merges', () => {
