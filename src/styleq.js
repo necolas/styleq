@@ -81,23 +81,27 @@ function createStyleq(options?: StyleqOptions): Styleq {
           for (const prop in style) {
             const value = style[prop];
             if (prop === compiledKey) continue;
-            // Only add to chunks if this property hasn't already been seen
-            if (!definedProperties.includes(prop)) {
-              // Each property value is used as an HTML class name
-              // { 'debug.string': 'debug.string', opacity: 's-jskmnoqp' }
-              if (typeof value === 'string') {
-                classNameChunk += classNameChunk ? ' ' + value : value;
+            // Each property value is used as an HTML class name
+            // { 'debug.string': 'debug.string', opacity: 's-jskmnoqp' }
+            if (typeof value === 'string' || value === null) {
+              // Only add to chunks if this property hasn't already been seen
+              if (!definedProperties.includes(prop)) {
                 definedProperties.push(prop);
                 if (nextCache != null) {
                   definedPropertiesChunk.push(prop);
                 }
+                if (typeof value === 'string') {
+                  classNameChunk += classNameChunk ? ' ' + value : value;
+                }
               }
-              // If we encounter a value that isn't a string
-              else if (value !== null) {
-                console.error(
-                  `styleq: ${prop} typeof ${value} is not "string".`
-                );
-              }
+            }
+            // If we encounter a value that isn't a string or `null`
+            else {
+              console.error(
+                `styleq: ${prop} typeof ${String(
+                  value
+                )} is not "string" or "null".`
+              );
             }
           }
           // Cache: write

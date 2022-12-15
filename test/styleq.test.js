@@ -38,12 +38,36 @@ describe('styleq()', () => {
     expect(styleq(style)[0]).toBe('aaa bbb');
   });
 
+  test('Ignored null and invalid values.', () => {
+    const style = {
+      $$css: true,
+      a: 'aaa',
+      b: 'bbb',
+      c: 1,
+      d: null,
+      e: undefined,
+      f: false,
+      g: true,
+      h: new Date(),
+    };
+    expect(styleqNoCache(style)[0]).toBe('aaa bbb');
+    expect(styleq(style)[0]).toBe('aaa bbb');
+  });
+
   test('combines different class names in order', () => {
     const a = { $$css: true, a: 'a', ':focus$aa': 'focus$aa' };
     const b = { $$css: true, b: 'b' };
     const c = { $$css: true, c: 'c', ':focus$cc': 'focus$cc' };
     expect(styleqNoCache([a, b, c])[0]).toBe('a focus$aa b c focus$cc');
     expect(styleq([a, b, c])[0]).toBe('a focus$aa b c focus$cc');
+  });
+
+  test('Unsets "null" values', () => {
+    const a = { $$css: true, a: 'a', ':focus$aa': 'focus$aa' };
+    const b = { $$css: true, a: null, b: 'b' };
+    const c = { $$css: true, b: null, c: 'c', ':focus$cc': 'focus$cc' };
+    expect(styleqNoCache([a, b, c])[0]).toBe('focus$aa c focus$cc');
+    expect(styleq([a, b, c])[0]).toBe('focus$aa c focus$cc');
   });
 
   test('dedupes class names for the same key', () => {
