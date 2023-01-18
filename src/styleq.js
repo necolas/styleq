@@ -20,7 +20,6 @@ import type {
 
 type Cache = WeakMap<CompiledStyle, [string, Array<string>, Cache]>;
 
-const cache: Cache = new WeakMap();
 const compiledKey: '$$css' = '$$css';
 
 function createStyleq(options?: StyleqOptions): Styleq {
@@ -33,6 +32,8 @@ function createStyleq(options?: StyleqOptions): Styleq {
     disableMix = options.disableMix === true;
     transform = options.transform;
   }
+
+  const cache: Cache = new WeakMap();
 
   return function styleq() {
     // Keep track of property commits to the className
