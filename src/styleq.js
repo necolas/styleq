@@ -41,7 +41,8 @@ function createStyleq(options?: StyleqOptions): Styleq {
     let className = '';
     let inlineStyle: null | InlineStyle = null;
     // The current position in the cache graph
-    let nextCache = disableCache ? null : cache;
+    let prevCache, nextCache
+    prevCache = nextCache = disableCache ? null : cache;
 
     // This way of creating an array from arguments is fastest
     const styles: Array<Styles> = new Array(arguments.length);
@@ -73,14 +74,14 @@ function createStyleq(options?: StyleqOptions): Styleq {
         let classNameChunk = '';
 
         // Check the cache to see if we've already done this work
-        if (nextCache != null && nextCache.has(style)) {
+        if (prevCache != null && prevCache.has(style)) {
           // Cache: read
-          const cacheEntry = nextCache.get(style);
+          const cacheEntry = prevCache.get(style);
           if (cacheEntry != null) {
             classNameChunk = cacheEntry[0];
             // $FlowIgnore
             definedProperties.push.apply(definedProperties, cacheEntry[1]);
-            nextCache = cacheEntry[2];
+            prevCache = cacheEntry[2];
           }
         }
         // Update the chunks with data from this object
