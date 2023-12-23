@@ -1,4 +1,5 @@
 *.log*
 coverage
 dist
+esm
 node_modules

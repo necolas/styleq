@@ -35,4 +35,5 @@ export type Styleq = (styles: Styles) => StyleqResult;
 export type IStyleq = {
   (...styles: $ReadOnlyArray<Styles>): StyleqResult,
   factory: (options?: StyleqOptions) => Styleq,
+  ...
 };
