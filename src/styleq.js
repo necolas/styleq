@@ -78,7 +78,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
           const cacheEntry = nextCache.get(style);
           if (cacheEntry != null) {
             classNameChunk = cacheEntry[0];
-            // $FlowIgnore
+            // $FlowIgnore[method-unbinding]
             definedProperties.push.apply(definedProperties, cacheEntry[1]);
             nextCache = cacheEntry[2];
           }
