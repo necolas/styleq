@@ -100,14 +100,13 @@ function createStyleq(options?: StyleqOptions): Styleq {
                 const propsToDefine = transformProperty
                   ? transformProperty(prop)
                   : prop;
-                const propsIsArray = Array.isArray(propsToDefine);
-                if (propsIsArray) {
+                if (Array.isArray(propsToDefine)) {
                   definedProperties.push(...propsToDefine);
                 } else {
                   definedProperties.push(propsToDefine);
                 }
                 if (nextCache != null) {
-                  if (propsIsArray) {
+                  if (Array.isArray(propsToDefine)) {
                     definedPropertiesChunk.push(...propsToDefine);
                   } else {
                     definedPropertiesChunk.push(propsToDefine);
