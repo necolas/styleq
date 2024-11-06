@@ -27,11 +27,13 @@ function createStyleq(options?: StyleqOptions): Styleq {
   let disableCache;
   let disableMix;
   let transform;
+  let transformProperty;
 
   if (options != null) {
     disableCache = options.disableCache === true;
     disableMix = options.disableMix === true;
     transform = options.transform;
+    transformProperty = options.transformProperty;
   }
 
   return function styleq() {
@@ -95,9 +97,21 @@ function createStyleq(options?: StyleqOptions): Styleq {
             if (typeof value === 'string' || value === null) {
               // Only add to chunks if this property hasn't already been seen
               if (!definedProperties.includes(prop)) {
-                definedProperties.push(prop);
+                const propsToDefine = transformProperty
+                  ? transformProperty(prop)
+                  : prop;
+                const propsIsArray = Array.isArray(propsToDefine);
+                if (propsIsArray) {
+                  definedProperties.push(...propsToDefine);
+                } else {
+                  definedProperties.push(propsToDefine);
+                }
                 if (nextCache != null) {
-                  definedPropertiesChunk.push(prop);
+                  if (propsIsArray) {
+                    definedPropertiesChunk.push(...propsToDefine);
+                  } else {
+                    definedPropertiesChunk.push(propsToDefine);
+                  }
                 }
                 if (typeof value === 'string') {
                   classNameChunk += classNameChunk ? ' ' + value : value;
@@ -162,7 +176,14 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   }
                   (subStyle: { ...InlineStyle })[prop] = value;
                 }
-                definedProperties.push(prop);
+                const propsToDefine = transformProperty
+                  ? transformProperty(prop)
+                  : prop;
+                if (Array.isArray(propsToDefine)) {
+                  definedProperties.push(...propsToDefine);
+                } else {
+                  definedProperties.push(propsToDefine);
+                }
                 // Cache is unnecessary overhead if results can't be reused.
                 nextCache = null;
               }
