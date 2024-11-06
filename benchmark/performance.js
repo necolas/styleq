@@ -331,7 +331,7 @@ test('merged inline style', () => {
       textDecoration: 'none',
       whiteSpace: 'pre',
       zIndex: '0',
-    }
+    },
   );
 });
 
@@ -362,7 +362,7 @@ test('merged inline style (mix disabled)', () => {
       textDecoration: 'none',
       whiteSpace: 'pre',
       zIndex: '0',
-    }
+    },
   );
 });
 

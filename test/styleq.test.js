@@ -163,7 +163,7 @@ describe('styleq()', () => {
     // Check the memoized result is correct
     expect(oneValue).toEqual(oneRepeat);
     expect(oneValue).toMatchInlineSnapshot(
-      `"borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a outline-c touchAction-d backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`
+      `"borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a outline-c touchAction-d backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`,
     );
 
     // TWO
@@ -182,7 +182,7 @@ describe('styleq()', () => {
     // Check the memoized result is correct
     expect(twoValue).toEqual(twoRepeat);
     expect(twoValue).toMatchInlineSnapshot(
-      `"outline-c touchAction-b borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`
+      `"outline-c touchAction-b borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`,
     );
   });
 
