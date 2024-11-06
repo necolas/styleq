@@ -18,7 +18,7 @@ import type {
   Styles,
 } from '../styleq.flow';
 
-type Cache = WeakMap<CompiledStyle, [string, Array<string>, Cache]>;
+type Cache = WeakMap<CompiledStyle, [string, $ReadOnlyArray<string>, Cache]>;
 
 const cache: Cache = new WeakMap();
 const compiledKey: '$$css' = '$$css';
@@ -78,8 +78,8 @@ function createStyleq(options?: StyleqOptions): Styleq {
           const cacheEntry = nextCache.get(style);
           if (cacheEntry != null) {
             classNameChunk = cacheEntry[0];
-            // $FlowIgnore[method-unbinding]
-            definedProperties.push.apply(definedProperties, cacheEntry[1]);
+            // Note: Babel transforms this into the faster `.apply()`
+            definedProperties.push(...cacheEntry[1]);
             nextCache = cacheEntry[2];
           }
         }
@@ -142,9 +142,13 @@ function createStyleq(options?: StyleqOptions): Styleq {
           if (inlineStyle == null) {
             inlineStyle = {};
           }
-          inlineStyle = Object.assign(({}: InlineStyle), style, inlineStyle);
+          inlineStyle = Object.assign(
+            ({}: { ...InlineStyle }),
+            style,
+            inlineStyle
+          );
         } else {
-          let subStyle: null | InlineStyle = null;
+          let subStyle: null | { ...InlineStyle } = null;
           for (const prop in style) {
             const value = style[prop];
             if (value !== undefined) {
@@ -156,7 +160,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   if (subStyle == null) {
                     subStyle = {};
                   }
-                  (subStyle: InlineStyle)[prop] = value;
+                  (subStyle: { ...InlineStyle })[prop] = value;
                 }
                 definedProperties.push(prop);
                 // Cache is unnecessary overhead if results can't be reused.
