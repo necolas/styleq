@@ -38,7 +38,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
 
   return function styleq() {
     // Keep track of property commits to the className
-    const definedProperties = [];
+    const definedProperties: Array<string> = [];
     // The className and inline style to build up
     let className = '';
     let inlineStyle: null | InlineStyle = null;
@@ -100,14 +100,13 @@ function createStyleq(options?: StyleqOptions): Styleq {
                 const propsToDefine = transformProperty
                   ? transformProperty(prop)
                   : prop;
-                const propsIsArray = Array.isArray(propsToDefine);
-                if (propsIsArray) {
+                if (Array.isArray(propsToDefine)) {
                   definedProperties.push(...propsToDefine);
                 } else {
                   definedProperties.push(propsToDefine);
                 }
                 if (nextCache != null) {
-                  if (propsIsArray) {
+                  if (Array.isArray(propsToDefine)) {
                     definedPropertiesChunk.push(...propsToDefine);
                   } else {
                     definedPropertiesChunk.push(propsToDefine);

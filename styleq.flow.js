@@ -27,7 +27,7 @@ export type StyleqOptions = {
   disableCache?: boolean,
   disableMix?: boolean,
   transform?: (EitherStyle) => EitherStyle,
-  transformProperty?: (string) => $ReadOnlyArray<string>,
+  transformProperty?: (string) => $ReadOnlyArray<string> | string,
 };
 
 export type StyleqResult = [string, InlineStyle | null];
