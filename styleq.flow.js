@@ -7,15 +7,15 @@
  * @flow strict
  */
 
-export type CompiledStyle = {
+export type CompiledStyle = $ReadOnly<{
   $$css: true,
   [key: string]: string,
-};
+}>;
 
-export type InlineStyle = {
+export type InlineStyle = $ReadOnly<{
   $$css?: empty,
-  [key: string]: number | string,
-};
+  [key: string]: mixed,
+}>;
 
 export type EitherStyle = CompiledStyle | InlineStyle;
 
@@ -27,6 +27,7 @@ export type StyleqOptions = {
   disableCache?: boolean,
   disableMix?: boolean,
   transform?: (EitherStyle) => EitherStyle,
+  transformProperty?: (string) => $ReadOnlyArray<string> | string,
 };
 
 export type StyleqResult = [string, InlineStyle | null];
