@@ -1,4 +1,4 @@
-*.log*
 coverage
 dist
+logs
 node_modules

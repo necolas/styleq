@@ -9,78 +9,91 @@
 
 const fs = require('fs');
 const Benchmark = require('benchmark');
-
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 const { styleq } = require('../dist/styleq');
 const { localizeStyle } = require('../dist/transform-localize-style');
+
+/**
+ * CLI
+ */
+
+// run.js --outfile filename.js
+const argv = yargs(hideBin(process.argv)).option('outfile', {
+  alias: 'o',
+  type: 'string',
+  description: 'Output file',
+  demandOption: false,
+}).argv;
+const outfile = argv.outfile;
 
 /**
  * Test helpers
  */
 
-const suite = new Benchmark.Suite('styleq-benchmarks');
-const test = (...args) => suite.add(...args);
+function createSuite(name, options) {
+  const suite = new Benchmark.Suite(name);
+  const test = (...args) => suite.add(...args);
 
-function jsonReporter(suite) {
-  const benchmarks = [];
-  const config = {
-    folder: 'logs',
-    callback(results, name, folder) {
-      // Write the results log
-      const dirpath = `${process.cwd()}/${folder}`;
-      const filepath = `${dirpath}/${name}.log`;
-      if (!fs.existsSync(dirpath)) {
-        fs.mkdirSync(dirpath);
-      }
-      fs.writeFileSync(filepath, `${JSON.stringify(results, null, 2)}\n`);
+  function jsonReporter(suite) {
+    const benchmarks = [];
 
-      // Print the markdown table
-      let markdown = '';
-      markdown += `| Benchmark | ops/sec | deviation (%) | samples |\n`;
-      markdown += `| :---      |    ---: |          ---: |    ---: |\n`;
-      markdown += results
-        .map((data) => {
-          const { name, deviation, ops, samples } = data;
-          const prettyOps = parseInt(ops, 10).toLocaleString();
-          return `| ${name} | ${prettyOps} | ${deviation} | ${samples} |`;
-        })
-        .join('\n');
-      console.log(markdown);
-    },
-  };
+    suite.on('cycle', (event) => {
+      benchmarks.push(event.target);
+    });
 
-  suite.on('cycle', (event) => {
-    benchmarks.push(event.target);
-  });
+    suite.on('error', (event) => {
+      throw new Error(String(event.target.error));
+    });
 
-  suite.on('error', (event) => {
-    throw new Error(String(event.target.error));
-  });
+    suite.on('complete', () => {
+      const timestamp = Date.now();
+      const result = benchmarks.map((bench) => {
+        if (bench.error) {
+          return {
+            name: bench.name,
+            id: bench.id,
+            error: bench.error,
+          };
+        }
 
-  suite.on('complete', () => {
-    const timestamp = Date.now();
-    const result = benchmarks.map((bench) => {
-      if (bench.error) {
         return {
           name: bench.name,
           id: bench.id,
-          error: bench.error,
+          samples: bench.stats.sample.length,
+          deviation: bench.stats.rme.toFixed(2),
+          ops: bench.hz.toFixed(bench.hz < 100 ? 2 : 0),
+          timestamp,
         };
-      }
-
-      return {
-        name: bench.name,
-        id: bench.id,
-        samples: bench.stats.sample.length,
-        deviation: bench.stats.rme.toFixed(2),
-        ops: bench.hz.toFixed(bench.hz < 100 ? 2 : 0),
-        timestamp,
-      };
+      });
+      options.callback(result, suite.name);
     });
-    config.callback(result, suite.name, config.folder);
-  });
+  }
+
+  jsonReporter(suite);
+  return { suite, test };
 }
 
-jsonReporter(suite);
+/**
+ * Test setup
+ */
+
+const aggregatedResults = {};
+const options = {
+  callback(data, suiteName) {
+    const testResults = data.reduce((acc, test) => {
+      const { name, ops } = test;
+      acc[name] = ops;
+      return acc;
+    }, {});
+
+    aggregatedResults[suiteName] = testResults;
+  },
+};
+
+console.log('Running performance benchmark, please wait...');
+
+const { suite, test } = createSuite('styleq', options);
 
 /**
  * Additional test subjects
@@ -204,6 +217,10 @@ const complexNestedStyleFixture = [
     ],
   ],
 ];
+
+/**
+ * Performance tests
+ */
 
 // SMALL OBJECT
 
@@ -381,3 +398,29 @@ test('transform: localize-style', () => {
 });
 
 suite.run();
+
+/**
+ * Print results
+ */
+
+const aggregatedResultsString = JSON.stringify(aggregatedResults, null, 2);
+
+// Print / Write results
+const now = new Date();
+const year = now.getFullYear();
+const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+const day = String(now.getDate()).padStart(2, '0');
+const hours = String(now.getHours()).padStart(2, '0');
+const minutes = String(now.getMinutes()).padStart(2, '0');
+const timestamp = `${year}${month}${day}-${hours}${minutes}`;
+
+const dirpath = `${process.cwd()}/logs`;
+const filepath = `${dirpath}/perf-${timestamp}.json`;
+if (!fs.existsSync(dirpath)) {
+  fs.mkdirSync(dirpath);
+}
+const outpath = outfile || filepath;
+fs.writeFileSync(outpath, `${aggregatedResultsString}\n`);
+
+console.log(aggregatedResultsString);
+console.log('Results written to', outpath);
