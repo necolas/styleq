@@ -16,11 +16,11 @@
     "sourceType": "module"
   },
   "extends": [
-    "plugin:flowtype/recommended",
+    "plugin:ft-flow/recommended",
     "prettier"
   ],
   "plugins": [
-    "flowtype"
+    "ft-flow"
   ],
   "env": {
     "browser": true,

@@ -108,8 +108,8 @@ function createStyleq(options?: StyleqOptions): Styleq {
             else {
               console.error(
                 `styleq: ${prop} typeof ${String(
-                  value
-                )} is not "string" or "null".`
+                  value,
+                )} is not "string" or "null".`,
               );
             }
           }
