@@ -36,7 +36,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
 
   return function styleq() {
     // Keep track of property commits to the className
-    const definedProperties = [];
+    const definedProperties: Array<string> = [];
     // The className and inline style to build up
     let className = '';
     let inlineStyle: null | InlineStyle = null;
@@ -116,7 +116,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
           // Cache: write
           if (nextCache != null) {
             // Create the next WeakMap for this sequence of styles
-            const weakMap = new WeakMap();
+            const weakMap: Cache = new WeakMap();
             nextCache.set(style, [
               classNameChunk,
               definedPropertiesChunk,
@@ -176,7 +176,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
   };
 }
 
-const styleq: IStyleq = createStyleq();
+const styleq: IStyleq = (createStyleq(): $FlowFixMe);
 styleq.factory = createStyleq;
 
 export { styleq };
