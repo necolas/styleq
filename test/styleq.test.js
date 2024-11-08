@@ -97,26 +97,26 @@ describe('styleq()', () => {
         textDecoration: 'textDecoration-a',
         whiteSpace: 'whiteSpace-a',
         wordWrap: 'wordWrap-a',
-        zIndex: 'zIndex-a',
+        zIndex: 'zIndex-a'
       },
       b: {
         $$css: true,
         cursor: 'cursor-b',
-        touchAction: 'touchAction-b',
+        touchAction: 'touchAction-b'
       },
       c: {
         $$css: true,
-        outline: 'outline-c',
+        outline: 'outline-c'
       },
       d: {
         $$css: true,
         cursor: 'cursor-d',
-        touchAction: 'touchAction-d',
+        touchAction: 'touchAction-d'
       },
       e: {
         $$css: true,
         textDecoration: 'textDecoration-e',
-        ':focus$textDecoration': 'focus$textDecoration-e',
+        ':focus$textDecoration': 'focus$textDecoration-e'
       },
       f: {
         $$css: true,
@@ -131,17 +131,17 @@ describe('styleq()', () => {
         ':focus$color': 'focus$color-f',
         ':focus$textDecoration': 'focus$textDecoration-f',
         ':active$transform': 'active$transform-f',
-        ':active$transition': 'active$transition-f',
+        ':active$transition': 'active$transition-f'
       },
       g: {
         $$css: true,
         display: 'display-g',
-        width: 'width-g',
+        width: 'width-g'
       },
       h: {
         $$css: true,
-        ':active$transform': 'active$transform-h',
-      },
+        ':active$transform': 'active$transform-h'
+      }
     };
 
     // This tests that repeat results are the same, and that memoized chunks
@@ -155,15 +155,15 @@ describe('styleq()', () => {
         styles.b,
         false,
         styles.c,
-        [styles.d, false, styles.e, false, [styles.f, styles.g], [styles.h]],
-      ],
+        [styles.d, false, styles.e, false, [styles.f, styles.g], [styles.h]]
+      ]
     ];
     const oneValue = styleq(one)[0];
     const oneRepeat = styleq(one)[0];
     // Check the memoized result is correct
     expect(oneValue).toEqual(oneRepeat);
     expect(oneValue).toMatchInlineSnapshot(
-      `"borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a outline-c touchAction-d backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`,
+      `"borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a outline-c touchAction-d backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`
     );
 
     // TWO
@@ -174,15 +174,15 @@ describe('styleq()', () => {
         styles.c,
         false,
         styles.b,
-        [styles.a, false, styles.e, false, [styles.f, styles.g], [styles.h]],
-      ],
+        [styles.a, false, styles.e, false, [styles.f, styles.g], [styles.h]]
+      ]
     ];
     const twoValue = styleq(two)[0];
     const twoRepeat = styleq(two)[0];
     // Check the memoized result is correct
     expect(twoValue).toEqual(twoRepeat);
     expect(twoValue).toMatchInlineSnapshot(
-      `"outline-c touchAction-b borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`,
+      `"outline-c touchAction-b borderColor-a borderStyle-a borderWidth-a boxSizing-a listStyle-a marginTop-a marginBottom-a paddingTop-a paddingEnd-a paddingBottom-a paddingStart-a whiteSpace-a wordWrap-a zIndex-a backgroundColor-f color-f cursor-f marginEnd-f marginStart-f textAlign-f textDecoration-f focus$color-f focus$textDecoration-f active$transition-f display-g width-g active$transform-h"`
     );
   });
 
@@ -236,7 +236,7 @@ describe('styleq()', () => {
 
     const [, inlineStyle2] = styleqNoMix([
       { font: 'inherit' },
-      { fontSize: 12 },
+      { fontSize: 12 }
     ]);
     const str2 = stringifyInlineStyle(inlineStyle2);
     expect(str2).toMatchInlineSnapshot(`"font:inherit;fontSize:12;"`);

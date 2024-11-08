@@ -11,5 +11,6 @@
       "modules": "commonjs"
     }],
     "@babel/preset-flow"
-  ]
+  ],
+  "plugins": ["babel-plugin-syntax-hermes-parser"]
 }

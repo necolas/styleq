@@ -19,13 +19,11 @@ const argv = yargs(hideBin(process.argv)).option('outfile', {
   alias: 'o',
   type: 'string',
   description: 'Output file',
-  demandOption: false,
+  demandOption: false
 }).argv;
 const outfile = argv.outfile;
 
-const files = [
-  path.join(__dirname, '../dist/styleq.js')
-];
+const files = [path.join(__dirname, '../dist/styleq.js')];
 
 console.log('Running benchmark-size, please wait...');
 
@@ -43,7 +41,7 @@ sizes.forEach((entry) => {
   const filename = file.split('dist/')[1];
   aggregatedResults[filename] = {
     compressed,
-    minified,
+    minified
   };
 });
 
