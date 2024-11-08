@@ -7,7 +7,8 @@
       "exclude": [
         "@babel/plugin-transform-typeof-symbol"
       ],
-      "targets": "defaults"
+      "targets": "defaults",
+      "modules": "commonjs"
     }],
     "@babel/preset-flow"
   ]

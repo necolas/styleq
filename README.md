@@ -387,9 +387,9 @@ const themeStyle = {
 const [ className ] = styleq(themeStyle, props.style);
 ```
 
-### Polyfilling logical properties and values
+### Polyfilling features at runtime
 
-A compiler might provide a polyfill for [CSS logical properties and values](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties). Using the `transform` option is one way to implement this functionality.
+A compiler might want to provide polyfills or other runtime transforms, e.g., [CSS logical properties and values](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties). Using the `transform` option is one way to implement this kind of functionality.
 
 Input:
 
@@ -433,7 +433,62 @@ const styles = {
 }
 ```
 
-In this case, `useStyleq` is a function defined by the compiler which transforms `$$css` styles into the correct class name for a given writing direction. An example of this transform can be seen in the [`localizeStyle`](./src/transform-localize-style.js) module. Note how care is taken to memoize the transform so that the same result is always used in merges.
+In this case, `useStyleq` is a function defined by the compiler which transforms `$$css` styles into the correct class name for a given writing direction. Take care to memoize the transform so that the same result is always used in merges. For example:
+
+```js
+const cache = new WeakMap();
+const markerProp = '$$css$localize';
+
+/**
+ * The compiler polyfills logical properties and values, generating a class
+ * name for both writing directions. The style objects are annotated by
+ * the compiler as needing this runtime transform. The results are memoized.
+ *
+ * { '$$css$localize': true, float: [ 'float-left', 'float-right' ] }
+ * => { float: 'float-left' }
+ */
+
+function compileStyle(style, isRTL) {
+  // Create a new compiled style for styleq
+  const compiledStyle = {};
+  for (const prop in style) {
+    if (prop !== markerProp) {
+      const value = style[prop];
+      if (Array.isArray(value)) {
+        compiledStyle[prop] = isRTL ? value[1] : value[0];
+      } else {
+        compiledStyle[prop] = value;
+      }
+    }
+  }
+  return compiledStyle;
+}
+export function localizeStyle(style, isRTL) {
+  if (style[markerProp] != null) {
+    const compiledStyleIndex = isRTL ? 1 : 0;
+    // Check the cache in case we've already seen this object
+    if (cache.has(style)) {
+      const cachedStyles = cache.get(style);
+      let compiledStyle = cachedStyles[compiledStyleIndex];
+      if (compiledStyle == null) {
+        // Update the missing cache entry
+        compiledStyle = compileStyle(style, isRTL);
+        cachedStyles[compiledStyleIndex] = compiledStyle;
+        cache.set(style, cachedStyles);
+      }
+      return compiledStyle;
+    }
+
+    // Create a new compiled style for styleq
+    const compiledStyle = compileStyle(style, isRTL);
+    const cachedStyles = new Array(2);
+    cachedStyles[compiledStyleIndex] = compiledStyle;
+    cache.set(style, cachedStyles);
+    return compiledStyle;
+  }
+  return style;
+}
+```
 
 ### Implementing utility styles
 

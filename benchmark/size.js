@@ -24,8 +24,7 @@ const argv = yargs(hideBin(process.argv)).option('outfile', {
 const outfile = argv.outfile;
 
 const files = [
-  path.join(__dirname, '../dist/styleq.js'),
-  path.join(__dirname, '../dist/transform-localize-style.js'),
+  path.join(__dirname, '../dist/styleq.js')
 ];
 
 console.log('Running benchmark-size, please wait...');

@@ -12,7 +12,6 @@ const Benchmark = require('benchmark');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { styleq } = require('../dist/styleq');
-const { localizeStyle } = require('../dist/transform-localize-style');
 
 /**
  * CLI
@@ -101,11 +100,6 @@ const { suite, test } = createSuite('styleq', options);
 
 const styleqNoCache = styleq.factory({ disableCache: true });
 const styleqNoMix = styleq.factory({ disableMix: true });
-const styleqWithLocalization = styleq.factory({
-  transform(style) {
-    return localizeStyle(style, false);
-  },
-});
 
 /**
  * Fixtures
@@ -364,37 +358,6 @@ test('merged inline style (mix disabled)', () => {
       zIndex: '0',
     },
   );
-});
-
-// LOCALIZE
-
-const styleNeedsLocalizationFixture = {
-  $$css: true,
-  $$css$localize: true,
-  backgroundColor: 'backgroundColor-class',
-  borderColor: 'borderColor-class',
-  borderStyle: 'borderStyle-class',
-  borderWidth: 'borderWidth-class',
-  boxSizing: 'boxSizing-class',
-  display: 'display-class',
-  listStyle: 'listStyle-class',
-  marginTop: 'marginTop-class',
-  marginEnd: ['marginRight-class', 'marginLeft-class'],
-  marginBottom: 'marginBottom-class',
-  marginStart: ['marginLeft-class', 'marginRight-class'],
-  paddingTop: 'paddingTop-class',
-  paddingEnd: ['paddingRight-class', 'paddingLeft-class'],
-  paddingBottom: 'paddingBottom-class',
-  paddingStart: ['paddingLeft-class', 'paddingRight-class'],
-  textAlign: 'textAlign-class',
-  textDecoration: 'textDecoration-class',
-  whiteSpace: 'whiteSpace-class',
-  wordWrap: 'wordWrap-class',
-  zIndex: 'zIndex-class',
-};
-
-test('transform: localize-style', () => {
-  styleqWithLocalization(styleNeedsLocalizationFixture);
 });
 
 suite.run();
