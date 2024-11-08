@@ -7,8 +7,10 @@
       "exclude": [
         "@babel/plugin-transform-typeof-symbol"
       ],
-      "targets": "defaults"
+      "targets": "defaults",
+      "modules": "commonjs"
     }],
     "@babel/preset-flow"
-  ]
+  ],
+  "plugins": ["babel-plugin-syntax-hermes-parser"]
 }

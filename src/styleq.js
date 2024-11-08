@@ -15,8 +15,8 @@ import type {
   StyleqOptions,
   CompiledStyle,
   InlineStyle,
-  Styles,
-} from '../styleq.flow';
+  Styles
+} from '../styleq.js.flow';
 
 type Cache = WeakMap<CompiledStyle, [string, Array<string>, Cache]>;
 
@@ -36,7 +36,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
 
   return function styleq() {
     // Keep track of property commits to the className
-    const definedProperties = [];
+    const definedProperties: Array<string> = [];
     // The className and inline style to build up
     let className = '';
     let inlineStyle: null | InlineStyle = null;
@@ -108,19 +108,19 @@ function createStyleq(options?: StyleqOptions): Styleq {
             else {
               console.error(
                 `styleq: ${prop} typeof ${String(
-                  value,
-                )} is not "string" or "null".`,
+                  value
+                )} is not "string" or "null".`
               );
             }
           }
           // Cache: write
           if (nextCache != null) {
             // Create the next WeakMap for this sequence of styles
-            const weakMap = new WeakMap();
+            const weakMap: Cache = new WeakMap();
             nextCache.set(style, [
               classNameChunk,
               definedPropertiesChunk,
-              weakMap,
+              weakMap
             ]);
             nextCache = weakMap;
           }
@@ -142,7 +142,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
           if (inlineStyle == null) {
             inlineStyle = {};
           }
-          inlineStyle = Object.assign(({}: InlineStyle), style, inlineStyle);
+          inlineStyle = Object.assign({} as InlineStyle, style, inlineStyle);
         } else {
           let subStyle: null | InlineStyle = null;
           for (const prop in style) {
@@ -156,7 +156,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   if (subStyle == null) {
                     subStyle = {};
                   }
-                  (subStyle: InlineStyle)[prop] = value;
+                  (subStyle as InlineStyle)[prop] = value;
                 }
                 definedProperties.push(prop);
                 // Cache is unnecessary overhead if results can't be reused.
@@ -176,7 +176,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
   };
 }
 
-const styleq: IStyleq = createStyleq();
+const styleq: IStyleq = createStyleq() as $FlowFixMe;
 styleq.factory = createStyleq;
 
 export { styleq };

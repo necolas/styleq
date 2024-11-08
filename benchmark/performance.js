@@ -12,7 +12,6 @@ const Benchmark = require('benchmark');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { styleq } = require('../dist/styleq');
-const { localizeStyle } = require('../dist/transform-localize-style');
 
 /**
  * CLI
@@ -23,7 +22,7 @@ const argv = yargs(hideBin(process.argv)).option('outfile', {
   alias: 'o',
   type: 'string',
   description: 'Output file',
-  demandOption: false,
+  demandOption: false
 }).argv;
 const outfile = argv.outfile;
 
@@ -53,7 +52,7 @@ function createSuite(name, options) {
           return {
             name: bench.name,
             id: bench.id,
-            error: bench.error,
+            error: bench.error
           };
         }
 
@@ -63,7 +62,7 @@ function createSuite(name, options) {
           samples: bench.stats.sample.length,
           deviation: bench.stats.rme.toFixed(2),
           ops: bench.hz.toFixed(bench.hz < 100 ? 2 : 0),
-          timestamp,
+          timestamp
         };
       });
       options.callback(result, suite.name);
@@ -88,7 +87,7 @@ const options = {
     }, {});
 
     aggregatedResults[suiteName] = testResults;
-  },
+  }
 };
 
 console.log('Running performance benchmark, please wait...');
@@ -101,11 +100,6 @@ const { suite, test } = createSuite('styleq', options);
 
 const styleqNoCache = styleq.factory({ disableCache: true });
 const styleqNoMix = styleq.factory({ disableMix: true });
-const styleqWithLocalization = styleq.factory({
-  transform(style) {
-    return localizeStyle(style, false);
-  },
-});
 
 /**
  * Fixtures
@@ -114,13 +108,13 @@ const styleqWithLocalization = styleq.factory({
 const basicStyleFixture1 = {
   $$css: true,
   backgroundColor: 'backgroundColor-1',
-  color: 'color-1',
+  color: 'color-1'
 };
 
 const basicStyleFixture2 = {
   $$css: true,
   backgroundColor: 'backgroundColor-2',
-  color: 'color-2',
+  color: 'color-2'
 };
 
 const bigStyleFixture = {
@@ -144,7 +138,7 @@ const bigStyleFixture = {
   textDecoration: 'textDecoration-3',
   whiteSpace: 'whiteSpace-3',
   wordWrap: 'wordWrap-3',
-  zIndex: 'zIndex-3',
+  zIndex: 'zIndex-3'
 };
 
 const bigStyleWithPseudosFixture = {
@@ -166,7 +160,7 @@ const bigStyleWithPseudosFixture = {
   ':focus$color': 'focus$color-4',
   ':focus$textDecoration': 'focus$textDecoration-4',
   ':active$transform': 'active$transform-4',
-  ':active$transition': 'active$transition-4',
+  ':active$transition': 'active$transition-4'
 };
 
 const complexNestedStyleFixture = [
@@ -179,25 +173,25 @@ const complexNestedStyleFixture = [
     {
       $$css: true,
       cursor: 'cursor-a',
-      touchAction: 'touchAction-a',
+      touchAction: 'touchAction-a'
     },
     false,
     {
       $$css: true,
-      outline: 'outline-b',
+      outline: 'outline-b'
     },
     [
       {
         $$css: true,
         cursor: 'cursor-c',
-        touchAction: 'touchAction-c',
+        touchAction: 'touchAction-c'
       },
       false,
       false,
       {
         $$css: true,
         textDecoration: 'textDecoration-d',
-        ':focus$textDecoration': 'focus$textDecoration-d',
+        ':focus$textDecoration': 'focus$textDecoration-d'
       },
       false,
       [
@@ -205,17 +199,17 @@ const complexNestedStyleFixture = [
         {
           $$css: true,
           display: 'display-e',
-          width: 'width-e',
+          width: 'width-e'
         },
         [
           {
             $$css: true,
-            ':active$transform': 'active$transform-f',
-          },
-        ],
-      ],
-    ],
-  ],
+            ':active$transform': 'active$transform-f'
+          }
+        ]
+      ]
+    ]
+  ]
 ];
 
 /**
@@ -300,7 +294,7 @@ test('large inline style', () => {
     textAlign: 'start',
     textDecoration: 'none',
     whiteSpace: 'pre',
-    zIndex: '0',
+    zIndex: '0'
   });
 });
 
@@ -309,7 +303,7 @@ test('merged inline style', () => {
     {
       backgroundColor: 'blue',
       borderColor: 'blue',
-      display: 'block',
+      display: 'block'
     },
     {
       backgroundColor: 'red',
@@ -330,8 +324,8 @@ test('merged inline style', () => {
       textAlign: 'start',
       textDecoration: 'none',
       whiteSpace: 'pre',
-      zIndex: '0',
-    },
+      zIndex: '0'
+    }
   );
 });
 
@@ -340,7 +334,7 @@ test('merged inline style (mix disabled)', () => {
     {
       backgroundColor: 'blue',
       borderColor: 'blue',
-      display: 'block',
+      display: 'block'
     },
     {
       backgroundColor: 'red',
@@ -361,40 +355,9 @@ test('merged inline style (mix disabled)', () => {
       textAlign: 'start',
       textDecoration: 'none',
       whiteSpace: 'pre',
-      zIndex: '0',
-    },
+      zIndex: '0'
+    }
   );
-});
-
-// LOCALIZE
-
-const styleNeedsLocalizationFixture = {
-  $$css: true,
-  $$css$localize: true,
-  backgroundColor: 'backgroundColor-class',
-  borderColor: 'borderColor-class',
-  borderStyle: 'borderStyle-class',
-  borderWidth: 'borderWidth-class',
-  boxSizing: 'boxSizing-class',
-  display: 'display-class',
-  listStyle: 'listStyle-class',
-  marginTop: 'marginTop-class',
-  marginEnd: ['marginRight-class', 'marginLeft-class'],
-  marginBottom: 'marginBottom-class',
-  marginStart: ['marginLeft-class', 'marginRight-class'],
-  paddingTop: 'paddingTop-class',
-  paddingEnd: ['paddingRight-class', 'paddingLeft-class'],
-  paddingBottom: 'paddingBottom-class',
-  paddingStart: ['paddingLeft-class', 'paddingRight-class'],
-  textAlign: 'textAlign-class',
-  textDecoration: 'textDecoration-class',
-  whiteSpace: 'whiteSpace-class',
-  wordWrap: 'wordWrap-class',
-  zIndex: 'zIndex-class',
-};
-
-test('transform: localize-style', () => {
-  styleqWithLocalization(styleNeedsLocalizationFixture);
 });
 
 suite.run();

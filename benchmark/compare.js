@@ -68,7 +68,7 @@ function generateComparisonData(results) {
     baseResult: isValidBase ? baseResult.toLocaleString() : '',
     patchResult: isValidPatch ? patchResult.toLocaleString() : '',
     ratio: ratioFixed,
-    icon,
+    icon
   };
 }
 
@@ -84,7 +84,7 @@ function generateMarkdownTable(mergedData) {
       const { baseResult, patchResult, ratio, icon } =
         generateComparisonData(results);
       rows.push(
-        `| &middot; ${test} | ${baseResult} | ${patchResult} | ${ratio} | ${icon} |`,
+        `| &middot; ${test} | ${baseResult} | ${patchResult} | ${ratio} | ${icon} |`
       );
     });
   });
