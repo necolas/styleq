@@ -7,15 +7,15 @@
  * @flow strict
  */
 
-export type CompiledStyle = {
+export type CompiledStyle = $ReadOnly<{
   $$css: true,
   [key: string]: string,
-};
+}>;
 
-export type InlineStyle = {
+export type InlineStyle = $ReadOnly<{
   $$css?: empty,
   [key: string]: number | string,
-};
+}>;
 
 export type EitherStyle = CompiledStyle | InlineStyle;
 

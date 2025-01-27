@@ -18,7 +18,7 @@ import type {
   Styles
 } from '../styleq.js.flow';
 
-type Cache = WeakMap<CompiledStyle, [string, Array<string>, Cache]>;
+type Cache = WeakMap<CompiledStyle, [string, $ReadOnlyArray<string>, Cache]>;
 
 const cache: Cache = new WeakMap();
 const compiledKey: '$$css' = '$$css';
@@ -142,9 +142,13 @@ function createStyleq(options?: StyleqOptions): Styleq {
           if (inlineStyle == null) {
             inlineStyle = {};
           }
-          inlineStyle = Object.assign({} as InlineStyle, style, inlineStyle);
+          inlineStyle = Object.assign(
+            {} as { ...InlineStyle },
+            style,
+            inlineStyle
+          );
         } else {
-          let subStyle: null | InlineStyle = null;
+          let subStyle: null | { ...InlineStyle } = null;
           for (const prop in style) {
             const value = style[prop];
             if (value !== undefined) {
@@ -156,7 +160,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   if (subStyle == null) {
                     subStyle = {};
                   }
-                  (subStyle as InlineStyle)[prop] = value;
+                  (subStyle as { ...InlineStyle })[prop] = value;
                 }
                 definedProperties.push(prop);
                 // Cache is unnecessary overhead if results can't be reused.
