@@ -15,8 +15,8 @@
   ],
   "scripts": {
     "benchmark:compare": "node benchmark/compare.js",
-    "benchmark:perf": "node benchmark/performance.js",
-    "benchmark:size": "node benchmark/size.js",
+    "benchmark:perf": "npm run build && node benchmark/performance.js",
+    "benchmark:size": "npm run build && node benchmark/size.js",
     "build": "babel src --out-dir dist --config-file ./configs/.babelrc",
     "flow": "flow --flowconfig-name ./configs/.flowconfig",
     "jest": "jest ./test",

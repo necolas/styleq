@@ -19,7 +19,8 @@ jobs:
     - name: 'Benchmark base'
       run: |
         git checkout -f ${{ github.event.pull_request.base.sha }}
-        npm install --loglevel error
+        npm install --ignore-scripts --loglevel error
+        npm run build
         if npm run benchmark:size -- -o ${{ env.BASE_JSON }}; then
           echo "Ran successfully on base branch"
         else
@@ -29,7 +30,7 @@ jobs:
     - name: 'Benchmark patch'
       run: |
         git checkout -f ${{ github.event.pull_request.head.sha }}
-        npm install --loglevel error
+        npm install --ignore-scripts --loglevel error
         npm run benchmark:size -- -o ${{ env.PATCH_JSON }}
         echo "Ran successfully on patch branch"
     - name: 'Collect results'
@@ -68,7 +69,8 @@ jobs:
     - name: 'Benchmark base'
       run: |
         git checkout -f ${{ github.event.pull_request.base.sha }}
-        npm install --loglevel error
+        npm install --ignore-scripts --loglevel error
+        npm run build
         if npm run benchmark:perf -- -o ${{ env.BASE_JSON }}; then
           echo "Ran successfully on base branch"
         else
@@ -78,7 +80,7 @@ jobs:
     - name: 'Benchmark patch'
       run: |
         git checkout -f ${{ github.event.pull_request.head.sha }}
-        npm install --loglevel error
+        npm install --ignore-scripts --loglevel error
         npm run benchmark:perf -- -o ${{ env.PATCH_JSON }}
         echo "Ran successfully on patch branch"
     - name: 'Collect results'
