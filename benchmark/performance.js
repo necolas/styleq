@@ -97,9 +97,22 @@ const { suite, test } = createSuite('styleq', options);
 /**
  * Additional test subjects
  */
+const transformCache = new WeakMap();
+const transform = (style) => {
+  // Check the cache in case we've already seen this object
+  if (transformCache.has(style)) {
+    const flexStyle = transformCache.get(style);
+    return flexStyle;
+  }
+  // Create a new compiled style for styleq
+  const flexStyle = { ...style, display: 'display-flex' };
+  transformCache.set(style, flexStyle);
+  return flexStyle;
+};
 
 const styleqNoCache = styleq.factory({ disableCache: true });
 const styleqNoMix = styleq.factory({ disableMix: true });
+const styleqTransform = styleq.factory({ transform });
 
 /**
  * Fixtures
@@ -266,6 +279,10 @@ test('large merge', () => {
 
 test('large merge (cache disabled)', () => {
   styleqNoCache([complexNestedStyleFixture]);
+});
+
+test('large merge (transform)', () => {
+  styleqTransform([complexNestedStyleFixture]);
 });
 
 // INLINE STYLES
