@@ -97,18 +97,23 @@ function createStyleq(options?: StyleqOptions): Styleq {
             if (typeof value === 'string' || value === null) {
               // Only add to chunks if this property hasn't already been seen
               if (!definedProperties.includes(prop)) {
-                const propsToDefine = transformProperty
-                  ? transformProperty(prop)
-                  : prop;
-                if (Array.isArray(propsToDefine)) {
-                  definedProperties.push(...propsToDefine);
-                  if (nextCache != null) {
-                    definedPropertiesChunk.push(...propsToDefine);
+                if (transformProperty) {
+                  const propsToDefine = transformProperty(prop);
+                  if (Array.isArray(propsToDefine)) {
+                    definedProperties.push(...propsToDefine);
+                    if (nextCache != null) {
+                      definedPropertiesChunk.push(...propsToDefine);
+                    }
+                  } else {
+                    definedProperties.push(propsToDefine);
+                    if (nextCache != null) {
+                      definedPropertiesChunk.push(propsToDefine);
+                    }
                   }
                 } else {
-                  definedProperties.push(propsToDefine);
+                  definedProperties.push(prop);
                   if (nextCache != null) {
-                    definedPropertiesChunk.push(propsToDefine);
+                    definedPropertiesChunk.push(prop);
                   }
                 }
                 if (typeof value === 'string') {
@@ -174,13 +179,15 @@ function createStyleq(options?: StyleqOptions): Styleq {
                   }
                   (subStyle as { ...InlineStyle })[prop] = value;
                 }
-                const propsToDefine = transformProperty
-                  ? transformProperty(prop)
-                  : prop;
-                if (Array.isArray(propsToDefine)) {
-                  definedProperties.push(...propsToDefine);
+                if (transformProperty) {
+                  const propsToDefine = transformProperty(prop);
+                  if (Array.isArray(propsToDefine)) {
+                    definedProperties.push(...propsToDefine);
+                  } else {
+                    definedProperties.push(propsToDefine);
+                  }
                 } else {
-                  definedProperties.push(propsToDefine);
+                  definedProperties.push(prop);
                 }
                 // Cache is unnecessary overhead if results can't be reused.
                 nextCache = null;
