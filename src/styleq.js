@@ -18,7 +18,18 @@ import type {
   Styles
 } from '../styleq.js.flow';
 
-type Cache = WeakMap<CompiledStyle, [string, $ReadOnlyArray<string>, Cache]>;
+type Cache = WeakMap<
+  CompiledStyle,
+  [
+    // className
+    string,
+    // style
+    $ReadOnlyArray<string>,
+    // debug string
+    string,
+    Cache
+  ]
+>;
 
 const cache: Cache = new WeakMap();
 const compiledKey: '$$css' = '$$css';
@@ -40,6 +51,8 @@ function createStyleq(options?: StyleqOptions): Styleq {
     // The className and inline style to build up
     let className = '';
     let inlineStyle: null | InlineStyle = null;
+    // The debug string to build up
+    let debugString = '';
     // The current position in the cache graph
     let nextCache = disableCache ? null : cache;
 
@@ -68,7 +81,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
       const style =
         transform != null ? transform(possibleStyle) : possibleStyle;
 
-      if (style.$$css) {
+      if (style.$$css != null) {
         // Build up the class names defined by this object
         let classNameChunk = '';
 
@@ -78,9 +91,10 @@ function createStyleq(options?: StyleqOptions): Styleq {
           const cacheEntry = nextCache.get(style);
           if (cacheEntry != null) {
             classNameChunk = cacheEntry[0];
+            debugString = cacheEntry[2];
             // $FlowIgnore
             definedProperties.push.apply(definedProperties, cacheEntry[1]);
-            nextCache = cacheEntry[2];
+            nextCache = cacheEntry[3];
           }
         }
         // Update the chunks with data from this object
@@ -89,7 +103,17 @@ function createStyleq(options?: StyleqOptions): Styleq {
           const definedPropertiesChunk = [];
           for (const prop in style) {
             const value = style[prop];
-            if (prop === compiledKey) continue;
+            if (prop === compiledKey) {
+              // Updating the debug string only happens once for each style in
+              // the stack.
+              const compiledKeyValue = style[prop];
+              if (compiledKeyValue !== true) {
+                debugString = debugString
+                  ? compiledKeyValue + '; ' + debugString
+                  : compiledKeyValue;
+              }
+              continue;
+            }
             // Each property value is used as an HTML class name
             // { 'debug.string': 'debug.string', opacity: 's-jskmnoqp' }
             if (typeof value === 'string' || value === null) {
@@ -120,6 +144,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
             nextCache.set(style, [
               classNameChunk,
               definedPropertiesChunk,
+              debugString,
               weakMap
             ]);
             nextCache = weakMap;
@@ -175,7 +200,7 @@ function createStyleq(options?: StyleqOptions): Styleq {
       }
     }
 
-    const styleProps = [className, inlineStyle];
+    const styleProps = [className, inlineStyle, debugString];
     return styleProps;
   };
 }

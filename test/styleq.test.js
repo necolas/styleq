@@ -250,4 +250,16 @@ describe('styleq()', () => {
     // Both should produce: [ 'a hover$a b', { b: 'b' } ]
     expect(styleqNoMix([a, b, binline])).toEqual(styleqNoMix([a, binline, b]));
   });
+
+  test('supports generating debug strings', () => {
+    const a = { $$css: 'path/to/a:1', a: 'aaa' };
+    const b = { $$css: 'path/to/b:2', b: 'bbb' };
+    const c = { $$css: 'path/to/c:3', b: 'ccc' };
+    const [, , debugString] = styleq([a]);
+    expect(debugString).toBe('path/to/a:1');
+    const [, , dataStyleSrc] = styleq([a, [b, c]]);
+    expect(dataStyleSrc).toBe('path/to/a:1; path/to/b:2; path/to/c:3');
+    const [, , dataStyleSrcNoCache] = styleqNoCache([a, [b, c]]);
+    expect(dataStyleSrcNoCache).toBe('path/to/a:1; path/to/b:2; path/to/c:3');
+  });
 });
