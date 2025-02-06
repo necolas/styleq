@@ -34,7 +34,7 @@ const [ className, inlineStyle ] = styleq(styles.root, { opacity });
 
 The `styleq` function efficiently merges deeply nested arrays of both extracted and inline style objects.
 
-* Compiled styles must set the `$$css` property to `true`.
+* Compiled styles must set the `$$css` property to `true` for production. And may be a string for development.
 * Any style object without the `$$css` property is treated as an **inline style**.
 * Compiled styles must be static for best performance.
 * Compiled style object keys do not need to match CSS property names; any string is allowed.
@@ -47,15 +47,21 @@ const styles = {
   root: {
     // Needed by the runtime
     $$css: true,
-    // Debug classes
-    'debug::file:styles.root': 'debug::file:styles.root',
     // Atomic CSS classes
     display: 'display-flex-class',
     alignItems: 'alignItems-center-class'
-  }
+  },
+  other: {
+    // String values for $$css are concatenated and can be used for dev debugging.
+    // Compilers are encouraged to provide file and line info.
+    $$css: 'path/to/file:10',
+    // Atomic CSS classes
+    display: 'display-flex-class',
+    alignItems: 'alignItems-center-class'
+  },
 };
 
-const [ className, inlineStyle ] = styleq(styles.root, props.style);
+const [ className, inlineStyle, dataStyleSrc ] = styleq(styles.root, props.style);
 ```
 
 ### styleq.factory(options) => styleq

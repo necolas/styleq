@@ -8,7 +8,7 @@
  */
 
 export type CompiledStyle = $ReadOnly<{
-  $$css: true,
+  $$css: true | string,
   [key: string]: string,
 }>;
 
@@ -29,7 +29,7 @@ export type StyleqOptions = {
   transform?: (EitherStyle) => EitherStyle,
 };
 
-export type StyleqResult = [string, InlineStyle | null];
+export type StyleqResult = [string, InlineStyle | null, string];
 export type Styleq = (styles: Styles) => StyleqResult;
 
 export type IStyleq = {
