@@ -7,10 +7,16 @@
       "exclude": [
         "@babel/plugin-transform-typeof-symbol"
       ],
-      "targets": "defaults",
+      "targets": {
+        "browsers": "> 0%",
+        "esmodules": false,
+        "ie": "11"
+      },
       "modules": "commonjs"
     }],
     "@babel/preset-flow"
   ],
-  "plugins": ["babel-plugin-syntax-hermes-parser"]
+  "plugins": [
+    "babel-plugin-syntax-hermes-parser"
+  ]
 }
