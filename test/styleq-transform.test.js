@@ -64,7 +64,7 @@ function localizeStyle(style, isRTL) {
   return style;
 }
 
-describe('transform: styles', () => {
+describe('transform', () => {
   let isRTL = false;
   const styleqWithLocalization = styleq.factory({
     transform(style) {
@@ -95,7 +95,7 @@ describe('transform: styles', () => {
     expect(styleRtl).toEqual({ opacity: 1 });
   });
 
-  test('memoizes results', () => {
+  test('supports memoizing results', () => {
     const firstStyle = localizeStyle(fixture, false);
     const secondStyle = localizeStyle(fixture, false);
     expect(firstStyle).toBe(secondStyle);

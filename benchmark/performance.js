@@ -110,9 +110,26 @@ const transform = (style) => {
   return flexStyle;
 };
 
+const propMap = {
+  marginInlineStart: ['marginInlineStart', 'marginLeft', 'marginRight'],
+  marginInlineEnd: ['marginInlineEnd', 'marginRight', 'marginLeft'],
+  paddingInlineStart: ['paddingInlineStart', 'paddingLeft', 'paddingRight'],
+  paddingInlineEnd: ['paddingInlineEnd', 'paddingRight', 'paddingLeft'],
+  marginLeft: ['marginLeft', 'marginInlineStart', 'marginInlineEnd'],
+  marginRight: ['marginRight', 'marginInlineEnd', 'marginInlineStart'],
+  paddingLeft: ['paddingLeft', 'paddingInlineStart', 'paddingInlineEnd'],
+  paddingRight: ['paddingRight', 'paddingInlineEnd', 'paddingInlineStart']
+};
+const transformProperty = (property) => propMap[property] || property;
+
 const styleqNoCache = styleq.factory({ disableCache: true });
 const styleqNoMix = styleq.factory({ disableMix: true });
 const styleqTransform = styleq.factory({ transform });
+const styleqTransformProperty = styleq.factory({ transformProperty });
+const styleqTransformPropertyNoCache = styleq.factory({
+  disableCache: true,
+  transformProperty
+});
 
 /**
  * Fixtures
@@ -287,6 +304,14 @@ test('large merge (cache disabled)', () => {
 
 test('large merge (transform)', () => {
   styleqTransform([complexNestedStyleFixture]);
+});
+
+test('large merge (transformProperty)', () => {
+  styleqTransformProperty([complexNestedStyleFixture]);
+});
+
+test('large merge (transformProperty, cache disabled)', () => {
+  styleqTransformPropertyNoCache([complexNestedStyleFixture]);
 });
 
 // INLINE STYLES
